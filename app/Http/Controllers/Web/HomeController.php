@@ -57,7 +57,7 @@ class HomeController extends Controller
         }
 
         try {
-            
+
             $product = Products::where('slug',$slug)->first();
             //jika data kosong
             if (empty($product)) {
@@ -73,10 +73,10 @@ class HomeController extends Controller
                         'produk'=>$data->product_id
                     ];
                 });
-                return view('web.detail',compact('product','bids'));
+                return view('web.detail_new',compact('product','bids'));
             }
-            return view('web.detail',compact('product'));
-        
+            return view('web.detail_new',compact('product'));
+
         } catch (Exception $e) {
              Log::error('Detail Product :'. $e->getMessage());
         }
@@ -94,9 +94,9 @@ class HomeController extends Controller
         if ($validator->fails()) {
             abort('404');
         }
-        
+
         try {
-            
+
             $products = Products::whereHas('kategori',function($query) use ($slug){
                 return $query->where('slug',$slug);
             })->active()->orderBy('id','desc')->paginate(16);
@@ -104,9 +104,9 @@ class HomeController extends Controller
             if ($products) {
                 return view('web.category',compact('products'));
             }
-            
+
             abort(404);
-        
+
         } catch (Exception $e) {
             Log::error('By Kategori :'. $e->getMessage());
         }
@@ -118,48 +118,48 @@ class HomeController extends Controller
         $validator = Validator::make(['slug'=>$slug], [
             'slug'=>['required','exists:posts,slug']
         ]);
-        
+
         //jika tidak ada redirect ke halaman 404
         if ($validator->fails()) {
             abort('404');
         }
 
         try {
-            
+
             $page = Posts::where('slug',$slug)->first();
-            
+
             if ($page) {
                 return view('web.page',compact('page'));
             }
-            
+
             abort(404);
 
         } catch (Exception $e) {
             Log::error('Page :'. $e->getMessage());
         }
     }
-    
+
     public function search(Request $request)
-    { 
+    {
       // ... (sisa kode Anda tetap sama) ...
       try {
-    
+
       $q = $request->input('q');
 
       $validator = Validator::make(['q'=>$q], ['q'=>['required','string','min:1','max:90']
       ]);
 
       if ($validator->fails()) {
-        
-      return redirect()->route('home'); 
+
+      return redirect()->route('home');
       }
 
 
       $products = Products::active()->where('title', 'LIKE', "%$q%")->paginate(16);
       $products->appends(['q' => $q]);
-    
+
       return view('web.search', compact('q', 'products'));
-    
+
       } catch (Exception $e) {
       Log::error('Search :'. $e->getMessage());
       }
@@ -181,9 +181,9 @@ class HomeController extends Controller
         if ($validator->fails()) {
             abort('404');
         }
-        
+
         try {
-            
+
             $products = Products::whereHas('karya',function($query) use ($slug){
                 return $query->where('slug',$slug);
             })->active()->orderBy('id','desc')->paginate(16);
@@ -191,9 +191,9 @@ class HomeController extends Controller
             if ($products) {
                 return view('web.seniman',compact('products'));
             }
-            
+
             abort(404);
-        
+
         } catch (Exception $e) {
             Log::error('By Seniman :'. $e->getMessage());
         }
