@@ -1,0 +1,74 @@
+.section-bid {
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+.bid-body {
+    padding: 1rem 1.2rem !important;
+}
+
+.bid-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: -0.1rem;
+}
+.item-category {
+    font-size: 1rem;
+    color: #828282;
+    margin-bottom: 1rem;
+}
+.bid-price {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 1.2rem;
+}
+.bid-description {
+    font-size: 0.8rem;
+    color: #828282;
+}
+.product-info,
+.shipped-from,
+.product-insurance {
+    color: #828282 !important;
+}
+.text-cyan {
+    color: #58bcc2 !important;
+}
+
+.button {
+    width: 100%;
+    font-size: 1rem;
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.8rem;
+}
+
+.btn-black {
+    color: #fff;
+    background-color: #051a36;
+    border-color: #051a36;
+}
+
+.btn-black:hover {
+    color: #fff;
+    background-color: #142f52;
+    border-color: #01142e;
+}
+
+.btn-black:focus,
+.btn-black.focus {
+    color: #fff;
+    background-color: #142f52;
+    border-color: #01142e;
+    box-shadow: 0 0 0 0.2rem rgb(20, 47, 82, 0.2);
+}
+
+.text-button-normal {
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+@media screen and (min-width: 768px) {
+    .section-bid {
+        padding: 2rem;
+    }
+}

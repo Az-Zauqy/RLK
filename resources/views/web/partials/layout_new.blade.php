@@ -16,9 +16,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400&display=swap" rel="stylesheet">
     {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet" /> --}}
-    <link rel="stylesheet" href="{{ asset('css/bid-detail-style.css') }}">
     <link href="{{ asset('theme/css/styles.css') }}" rel="stylesheet" />
     <link href="{{ asset('theme/css/omahkoding.css') }}?=v.0.0.14" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('css/bid-detail-style.css') }}">
     <link href="{{ asset('css/header.css') }}" rel="stylesheet">
     <link href="{{ asset('css/footer.css') }}" rel="stylesheet">
     <!-- Custom fonts for this template-->

@@ -12,7 +12,7 @@
 
 <!-- Mulai konten utama halaman -->
 @section('content')
-    <section class="p-5" style="background: #f3f6f8;">
+    <section class="section-bid">
         <div class="" id="app">
 
             {{-- Grid utama: gambar, info produk, dan panel bid/chat --}}
@@ -35,79 +35,69 @@
                 </div>
 
                 {{-- Kolom tengah: detail produk --}}
-                <div class="col col-mobile">
+                <div class="bid-body col col-mobile">
                     {{-- Judul produk --}}
-                    <h1 class="single-title">{{ $product->title }}</h1>
+                    <h1 class="bid-title">{{ $product->title }}</h1>
+                    {{-- Kategori produk --}}
+                    <h2 class="item-category">{{ $product->kategori->name }}</h2>
                     {{-- Harga produk --}}
-                    <div class="text-danger single-price">{{ $product->price_str }}</div>
-                    {{-- Kelipatan bid --}}
-                    <div class="d-flex caption-produk">
-                        <div class="flex-grow1">Kelipatan Bid</div>
-                        <div class="flex-grow2">{{ $product->kelipatan_bid }}</div>
+                    <h3 class="bid-price">{{ $product->price_str }}</h3>
+                    {{-- Deskripsi produk --}}
+                    <div class="bid-description">
+                        {!! $product->description !!}
                     </div>
                     {{-- Informasi produk --}}
-                    <div class="pt-2 fw-bold">Informasi Produk</div>
-                    <div class="d-flex caption-produk">
-                        <div class="flex-grow1">Berat</div>
-                        <div class="flex-grow2">{{ $product->weight }}</div>
-                    </div>
-                    <div class="d-flex caption-produk">
-                        <div class="flex-grow1">Kondisi</div>
-                        <div class="flex-grow2">{{ $product->kondisi }}</div>
-                    </div>
-                    <div class="d-flex caption-produk">
-                        <div class="flex-grow1">Kategori</div>
-                        <div class="flex-grow2">
-                            {{-- Link ke kategori --}}
-                            <a href="{{ route('products.category', $product->kategori->slug) }}"
-                                class="text-decoration-none text-dark">
-                                {{ $product->kategori->name }}
-                            </a>
+                    <div class="product-info">
+                        <div class="pt-2">Informasi Produk</div>
+                        <div class="d-flex">
+                            <div class="flex-grow1">Berat</div>
+                            <div class="flex-grow2">{{ $product->weight }}</div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="flex-grow1">Kondisi</div>
+                            <div class="flex-grow2">{{ $product->kondisi }}</div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="flex-grow1">Seniman</div>
+                            <div class="flex-grow2">
+                                {{-- Link ke seniman --}}
+                                <a href="{{ route('products.seniman', $product->karya->slug) }}"
+                                    class="text-decoration-none text-cyan">
+                                    {{ $product->karya->name }}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="flex-grow1">Tanggal berakhir</div>
+                            <div class="flex-grow2">{{ $product->end_date_indo }}</div>
                         </div>
                     </div>
-                    <div class="d-flex caption-produk">
-                        <div class="flex-grow1">Seniman</div>
-                        <div class="flex-grow2">
-                            {{-- Link ke seniman --}}
-                            <a href="{{ route('products.seniman', $product->karya->slug) }}"
-                                class="text-decoration-none text-dark">
-                                {{ $product->karya->name }}
-                            </a>
-                        </div>
+
+                    {{-- Tombol bid --}}
+                    <div class="d-block w-100 bid-button py-2">
+                        <button type="button" class="button btn-black btn-block w-100" id="bid-button">Bid</button>
                     </div>
-                    <div class="d-flex caption-produk">
-                        <div class="flex-grow1">Tanggal berakhir</div>
-                        <div class="flex-grow2">{{ $product->end_date_indo }}</div>
-                    </div>
+
                     {{-- Info pengiriman --}}
-                    <div class="row mt-4">
-                        <div class="col-md-12 single-send fw-bold">
+                    <div class="row mt-4 shipped-from">
+                        <div class="col-md-12 fw-bold">
                             Pengiriman
                         </div>
-                        <div class="col-md-12 single-city">
+                        <div class="col-md-12">
                             Dikirim dari <span>Semarang</span>
                         </div>
                     </div>
                     {{-- Info asuransi jika ada --}}
                     @if ($product->asuransi)
-                        <div class="row mt-2">
-                            <div class="col-md-12 single-send fw-bold">
+                        <div class="row mt-2 product-insurance">
+                            <div class="col-md-12 fw-bold">
                                 Proteksi Kerusakan
                             </div>
-                            <div class="col-md-12 single-city">
+                            <div class="col-md-12 ">
                                 melindungi produkmu dari risiko rusak maupun kerugian selama 6 bulan
                             </div>
                         </div>
                     @endif
-                    {{-- Deskripsi produk --}}
-                    <div class="pt-2 fw-bold m-block">Deskripsi</div>
-                    <div class="single-desc m-block">
-                        {!! $product->description !!}
-                    </div>
-                    {{-- Tombol bid --}}
-                    <div class="d-block w-100 bid-button py-2">
-                        <button type="button" class="btn btn-danger btn-block w-100" id="bid-button">Bid</button>
-                    </div>
                 </div>
 
                 {{-- Kolom kanan: panel bid/chat --}}
@@ -177,7 +167,7 @@
                     </div>
                 </div>
 
-                {{-- Kolom deskripsi dan kelengkapan karya untuk tampilan mobile --}}
+                {{-- Kolom deskripsi dan kelengkapan karya untuk tampilan web --}}
                 <div class="col-md-12 desk-mobile pb-3">
                     <div class="pt-2 fw-bold">Deskripsi</div>
                     <div class="single-desc">
