@@ -1,0 +1,104 @@
+/* === AREA PREVIEW GAMBAR === */
+.preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.preview-item {
+  position: relative;
+  width: 120 !important;
+  height: 120 !important;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8f9fa;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.preview-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.preview-item img {
+  width: 120px !important;
+  height: 120px !important;
+  object-fit: cover !important;
+  border-radius: 8px;
+  display: block;
+  max-width: none !important;
+  max-height: none !important;
+  pointer-events: none;
+}
+
+/* === LABEL COVER === */
+.preview-item.cover {
+  border: 3px solid #28a745;
+}
+
+.preview-item.cover::after {
+  content: "Cover Utama";
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  background: #28a745;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+/* === TOMBOL AKSI DI SAMPING GAMBAR === */
+.preview-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 5;
+}
+
+/* === STYLE UNTUK TOMBOL === */
+.btn-preview {
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+/* === WARNA TIAP TOMBOL === */
+.btn-edit {
+  background-color: #007bff;
+}
+
+.btn-edit:hover {
+  background-color: #0069d9;
+}
+
+.btn-cover {
+  background-color: #ffc107;
+  color: #343a40;
+}
+
+.btn-cover:hover {
+  background-color: #e0a800;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
+}

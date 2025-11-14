@@ -3,211 +3,262 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Posts;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use App\Kategori;
-use App\Tags;
+use Illuminate\Support\Str;
 
 class BlogsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    /** =======================
+     *  INDEX
+     *  ======================= */
     public function index()
     {
-        $blogs = Posts::Blog()->orderBy('id','desc')->get();
-        return view('admin.blogs.index',compact('blogs'));
+        $blogs = DB::table('posts as p')
+            ->leftJoin('kategori as k', 'k.id', '=', 'p.kategori_id')
+            ->where('p.post_type', 'blog')
+            ->select('p.*', 'k.name as kategori_name')
+            ->orderByDesc('p.id')
+            ->get();
+
+        return view('admin.blogs.index', compact('blogs'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    /** =======================
+     *  CREATE
+     *  ======================= */
     public function create()
     {
-        $cats = Kategori::Blog()->pluck('name','id');
-        return view('admin.blogs.create',compact('cats'));
+        $cats = DB::table('kategori')
+            ->where('cat_type', 'blog')
+            ->pluck('name', 'id');
+
+        $tags = DB::table('tags')->pluck('name', 'id');
+
+        return view('admin.blogs.create', compact('cats', 'tags'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    /** =======================
+     *  STORE
+     *  ======================= */
     public function store(Request $request)
     {
-        // dd($request->all());
         $request->validate([
-            'title'=>'required',
-            'body'=>'required',
-            'status'=>'required',
-        ],[
-            'title.required' => 'Judul wajib di isi',
-            'body.required' => 'Content wajib di isi',
-            'status.required' => 'status wajib di isi',
+            'title'  => 'required',
+            'body'   => 'required',
+            'status' => 'required',
         ]);
-        try {
-                try {
-                    if ($request->hasFile('fotoblog')) {
-                        $dir = 'uploads/blogs/';
-                        $extension = strtolower($request->file('fotoblog')->getClientOriginalExtension()); // get image extension
-                        $fileName = uniqid() . '.' . $extension; // rename image
-                        $request->file('fotoblog')->move($dir, $fileName);
-                        $save['fotoblog'] =  $fileName;
-                    }
-                } catch (Exception $e) {
-                     Log::error("Upload foto blog error ".$e->getMessage());
-                }
-            $blog = Posts::create([
-                'user_id'=> Auth::user()->id,
-                'title'=> $request->title,
-                'kategori_id'=> $request->kategori_id,
-                'slug'=> Str::slug($request->title,'-'),
-                'body'=> $request->body,
-                'status'=> $request->status,
-                'post_type'=> 'blog',
-                'image'=> $save['fotoblog'] ?? NULL,
-            ]);
-            if(!empty($request->tagger)){
-                $arrayImplode = implode(",",$request->tagger);
-                $tags = explode(",",$arrayImplode);
-                $tagsId = collect($tags)->map(function($tag) {
-                    if(!empty($tag) || $tag != ""){
-                        return Tags::firstOrCreate(['name' => trim($tag),'slug'=>Str::slug($tag,'-')])->id;
-                    }
-                });
 
-                $blog->tags()->attach($tagsId);
+        DB::beginTransaction();
+        try {
+            $blogId = DB::table('posts')->insertGetId([
+                'user_id'     => Auth::id(),
+                'title'       => $request->title,
+                'kategori_id' => $request->kategori_id,
+                'slug'        => Str::slug($request->title, '-'),
+                'body'        => $request->body,
+                'status'      => $request->status,
+                'post_type'   => 'blog',
+                'created_at'  => now(),
+                'updated_at'  => now(),
+            ]);
+
+            /** === Upload Gambar === */
+            if ($request->hasFile('fotoblog')) {
+                $dir = public_path('uploads/blogs');
+                if (!file_exists($dir)) mkdir($dir, 0777, true);
+
+                foreach ($request->file('fotoblog') as $i => $file) {
+                    $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+                    $file->move($dir, $fileName);
+
+                    DB::table('blog_images')->insert([
+                        'post_id'    => $blogId,
+                        'filename'   => $fileName,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
+                    if ($i === 0) {
+                        DB::table('posts')->where('id', $blogId)->update(['image' => $fileName]);
+                    }
+                }
             }
-            return redirect()->route('admin.blogs.index')->with('message', 'Data berhasil disimpan');
-        } catch (Exception $e) {
-            Log::error("Blog save error ".$e->getMessage());
+
+            /** === Simpan Tags === */
+            if (!empty($request->tagger)) {
+                foreach ($request->tagger as $tag) {
+                    DB::table('tags')->updateOrInsert(
+                        ['slug' => Str::slug($tag, '-')],
+                        ['name' => $tag, 'slug' => Str::slug($tag, '-')]
+                    );
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('admin.blogs.index')->with('message', 'Blog berhasil disimpan!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Blog Store Error: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat menyimpan blog.');
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    /** =======================
+     *  EDIT
+     *  ======================= */
     public function edit($id)
     {
-        $blog = Posts::findOrFail($id);
-        $cats = Kategori::Blog()->pluck('name','id');
-        return view('admin.blogs.edit',compact('blog','cats'));
+        $blog = DB::table('posts')->find($id);
+        $cats = DB::table('kategori')
+            ->where('cat_type', 'blog')
+            ->pluck('name', 'id');
+        $tags = DB::table('tags')->pluck('name', 'id');
+        $images = DB::table('blog_images')->where('post_id', $id)->get();
+
+        return view('admin.blogs.edit', compact('blog', 'cats', 'tags', 'images'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    /** =======================
+     *  UPDATE
+     *  ======================= */
     public function update(Request $request, $id)
     {
         $request->validate([
-            'title'=>'required',
-            'body'=>'required',
-            'status'=>'required',
-        ],[
-            'title.required' => 'Judul wajib di isi',
-            'body.required' => 'Content wajib di isi',
-            'status.required' => 'status wajib di isi',
+            'title'  => 'required',
+            'body'   => 'required',
+            'status' => 'required',
         ]);
+
+        DB::beginTransaction();
         try {
-            try {
-                if ($request->hasFile('fotoblog')) {
-                    $dir = 'uploads/blogs/';
-                    $extension = strtolower($request->file('fotoblog')->getClientOriginalExtension()); // get image extension
-                    $fileName = uniqid() . '.' . $extension; // rename image
-                    $request->file('fotoblog')->move($dir, $fileName);
-                    $save['fotoblog'] =  $fileName;
-                }
-            } catch (Exception $e) {
-                 Log::error("Upload foto blog error ".$e->getMessage());
-            }
-            $blog = Posts::findOrFail($id);
-            $blog->update([
-                'user_id'=> Auth::user()->id,
-                'title'=> $request->title,
-                'slug'=> Str::slug($request->title,'-'),
-                'body'=> $request->body,
-                'status'=> $request->status,
-                'post_type'=> 'blog',
-                'image'=> $save['fotoblog'] ?? $blog->image,
+            DB::table('posts')->where('id', $id)->update([
+                'user_id'     => Auth::id(),
+                'title'       => $request->title,
+                'kategori_id' => $request->kategori_id,
+                'slug'        => Str::slug($request->title, '-'),
+                'body'        => $request->body,
+                'status'      => $request->status,
+                'updated_at'  => now(),
             ]);
 
-            if(!empty($request->tagger)){
-                $arrayImplode = implode(",",$request->tagger);
-                $tags = explode(",",$arrayImplode);
-                $tagsId = collect($tags)->map(function($tag) {
-                    if(!empty($tag) || $tag != ""){
-                        return Tags::firstOrCreate(['name' => trim($tag),'slug'=>Str::slug($tag,'-')])->id;
-                    }
-                });
-                 $blog->tags()->sync($tagsId);
+            /** === Upload gambar baru === */
+            if ($request->hasFile('fotoblog')) {
+                $dir = public_path('uploads/blogs');
+                if (!file_exists($dir)) mkdir($dir, 0777, true);
+
+                foreach ($request->file('fotoblog') as $file) {
+                    $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+                    $file->move($dir, $fileName);
+
+                    DB::table('blog_images')->insert([
+                        'post_id'    => $id,
+                        'filename'   => $fileName,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
             }
-            return redirect()->route('admin.blogs.index')->with('message', 'Data berhasil disimpan');
-        } catch (Exception $e) {
-            Log::error("Blog save error ".$e->getMessage());
+
+            DB::commit();
+            return redirect()->route('admin.blogs.index')->with('message', 'Blog berhasil diperbarui!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Blog Update Error: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat memperbarui blog.');
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    /** =======================
+     *  DELETE
+     *  ======================= */
     public function destroy($id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $images = DB::table('blog_images')->where('post_id', $id)->get();
+            foreach ($images as $img) {
+                $path = public_path('uploads/blogs/' . $img->filename);
+                if (file_exists($path)) unlink($path);
+            }
+
+            DB::table('blog_images')->where('post_id', $id)->delete();
+            DB::table('posts')->where('id', $id)->delete();
+
+            DB::commit();
+            return back()->with('message', 'Blog berhasil dihapus!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Blog Delete Error: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat menghapus blog.');
+        }
     }
-    public function getTag(Request $request){
 
-      $search = $request->search;
-
-      if($search == ''){
-         $tag = Tags::orderby('name','asc')->select('id','name')->get();
-      }else{
-         $tag = Tags::orderby('name','asc')->select('id','name')->where('name', 'like', '%' .$search . '%')->get();
-      }
-
-      $response = array();
-      foreach($tag as $tags){
-         $response[] = array(
-              "id"=>$tags->name,
-              "text"=>$tags->name
-         );
-      }
-
-      echo json_encode($response);
-      exit;
-   }
-   public function status($id)
+    /** =======================
+     *  TAG AJAX (untuk select2)
+     *  ======================= */
+    public function getTag(Request $request)
     {
-        $blog = Posts::findOrFail($id);
-        $blog->status = $blog->status == 'DRAFT' ? 'PUBLISHED' : 'DRAFT';
-        $blog->save();
-        return back();
+        $search = $request->search;
+        $tags = DB::table('tags')
+            ->when($search, fn($q) => $q->where('name', 'like', "%$search%"))
+            ->select('name as id', 'name as text')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json($tags);
+    }
+
+    /** =======================
+     *  DELETE GAMBAR
+     *  ======================= */
+    public function deleteImage($id)
+    {
+        $image = DB::table('blog_images')->find($id);
+        if (!$image) return response()->json(['success' => false]);
+
+        $path = public_path('uploads/blogs/' . $image->filename);
+        if (file_exists($path)) unlink($path);
+        DB::table('blog_images')->where('id', $id)->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    /** =======================
+     *  GANTI GAMBAR
+     *  ======================= */
+    public function replaceImage(Request $request, $id)
+    {
+        $image = DB::table('blog_images')->find($id);
+        if (!$image || !$request->hasFile('new_image')) {
+            return response()->json(['success' => false]);
+        }
+
+        $file = $request->file('new_image');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/blogs'), $filename);
+
+        $oldPath = public_path('uploads/blogs/' . $image->filename);
+        if (file_exists($oldPath)) unlink($oldPath);
+
+        DB::table('blog_images')->where('id', $id)->update(['filename' => $filename]);
+
+        return response()->json([
+            'success' => true,
+            'new_url' => asset('uploads/blogs/' . $filename)
+        ]);
+    }
+
+    /** =======================
+     *  SET COVER IMAGE
+     *  ======================= */
+    public function setCover($id, $blogId)
+    {
+        $img = DB::table('blog_images')->where('id', $id)->first();
+        if (!$img) return response()->json(['success' => false]);
+
+        DB::table('posts')->where('id', $blogId)->update(['image' => $img->filename]);
+        return response()->json(['success' => true]);
     }
 }

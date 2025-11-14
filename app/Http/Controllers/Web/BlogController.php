@@ -22,10 +22,8 @@ class BlogController extends Controller
         }
 
         if ($request->filled('filter')) {
-            $filter = strtolower($request->filter);
-            $query->where(function ($q) use ($filter) {
-                $q->where('title', 'like', "%{$filter}%")
-                ->orWhere('body', 'like', "%{$filter}%");
+            $query->whereHas('kategori', function ($q) use ($request) {
+                $q->where('slug', $request->filter);
             });
         }
 
@@ -61,7 +59,10 @@ class BlogController extends Controller
 
         $blogs = $query->paginate(10);
 
-        return view('web.blogs', compact('blogs', 'request'));
+        // 🔹 Ambil semua kategori dari tabel kategori
+        $categories = \App\Kategori::orderBy('name')->get();    
+
+        return view('web.blogs', compact('blogs', 'request', 'categories'));
     }
 
     public function detail($slug)
@@ -78,16 +79,28 @@ class BlogController extends Controller
 
         try {
             
-            $blog = Posts::Blog()->where('slug',$slug)->where('status','PUBLISHED')->first();
+            $blog = Posts::Blog()
+                ->with('images')
+                ->where('slug',$slug)
+                ->where('status','PUBLISHED')
+                ->first();
             
             if ($blog) {
-                return view('web.blog-detail',compact('blog'));
+                $relatedBlogs = Posts::Blog()
+                ->where('id', '!=', $blog->id)
+                ->where('status', 'PUBLISHED')
+                ->latest()
+                ->take(3)
+                ->get();
+
+                return view('web.blog-detail',compact('blog', 'relatedBlogs'));
             }
             
             abort(404);
 
         } catch (Exception $e) {
             Log::error('Page :'. $e->getMessage());
+            abort(500);
         }
     }
 }

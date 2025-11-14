@@ -31,7 +31,9 @@ class HomeController extends Controller
         $blogs = Posts::Blog()->orderBy('id','desc')->where('status','PUBLISHED')->take(2)->get();
 
         // 2. TAMBAHKAN INI (Mengambil 1 event aktif terbaru)
-        $featuredEvent = Event::where('status', 'active')->latest()->first();
+        $featuredEvent = Event::whereIn('status', ['active', 'coming_soon'])
+                        ->latest()
+                        ->first();
 
         // 3. MODIFIKASI INI (Tambahkan 'featuredEvent' ke compact)
         return view('web.home',compact('products','sliders','blogs', 'featuredEvent'));

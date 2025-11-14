@@ -54,7 +54,8 @@
                         <div class="form-group">
                             <label>Status *</label>
                             <select name="status" class="form-control" required>
-                                <option value="active" selected>Active (Tampilkan di Homepage)</option>
+                                <option value="active" selected>Active (Tampilkan "Detail")</option>
+                                <option value="coming_soon">Segera Hadir (Tampilkan "Segera Hadir")</option>
                                 <option value="inactive">Inactive (Sembunyikan)</option>
                             </select>
                         </div>

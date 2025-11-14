@@ -90,4 +90,9 @@ class Posts extends Model
 
         return $cleaned;
     }
+
+    public function images()
+    {
+        return $this->hasMany(\App\BlogImage::class, 'post_id');
+    }
 }

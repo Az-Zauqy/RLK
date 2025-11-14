@@ -1,103 +1,24 @@
 @extends('web.partials.layout')
-@section('blogs','aktiv')
+
+@section('blogs', 'aktiv')
+
+{{-- CSS eksternal --}}
 @section('css')
-<style type="text/css">
-    .blog-figure {
-        position: relative;
-        overflow: hidden;
-        height: 220px;
-        width: 100%;
-        border-radius: 12px;
-    }
+<link rel="stylesheet" href="{{ asset('css/blog/blog.css') }}">
+@endsection
 
-    .blog-figure img {
-        object-fit: cover;
-        object-position: center;
-        height: 100%;
-        width: 100%;
-        transition: transform 0.3s ease;
-    }
- 
-    .blog-figure:hover img {
-        transform: scale(1.05);
-    }
-
-    .blog-search-form input::placeholder {
-        color: #aaa;
-    }
-
-    .blog-search-form .btn-outline-secondary:hover {
-        background-color: #f0f0f0;
-    }
-
-    .blog-search-form select {
-        cursor: pointer;
-    }
-
-    .blog-card {
-        border: none;
-        transition: all 0.3s ease;
-        border-radius: 16px;
-    }
-
-    .blog-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-
-    .blog-title {
-        font-weight: 600;
-        font-size: 15px;
-        color: #000;
-    }
-
-    .blog-date {
-        color: #888;
-        font-size: 13px;
-    }
-
-    @media (max-width: 768px) {
-        .blog-figure {
-            height: 180px;
-        }
-    }
-    .blog-figure {
-        position: relative;
-        overflow: hidden;
-        height: 220px; /* lebih kecil dari sebelumnya */
-        width: 100%;
-        border-radius: 16px;
-    }
-    .blog-figure img {
-        object-fit: cover;
-        object-position: center;
-        width: 100%;
-        height: 100%;
-        transition: transform 0.3s ease;
-    }
-    .blog-figure:hover img {
-        transform: scale(1.05);
-    }
-    .card-body h6 {
-        font-size: 1rem;
-    }
-    .card-body small {
-        font-size: 0.875rem;
-    }
-    .container {
-        margin-top: 40px; /* jarak dari atas */
-    }
-</style>
-@endsection 
 @section('content')
 <section>
     <div class="container">
-        {{-- Judul dan Form Pencarian selalu tampil --}}
+        {{-- Judul + Form Pencarian --}}
         <div class="row py-2 justify-content-md-center pb-5 mt-3">
             <div class="text-center">
                 <h2 class="mb-4">Blogs</h2>
+
                 <form action="{{ route('blogs') }}" method="GET" 
-                    class="d-flex align-items-center justify-content-center gap-2 flex-wrap blog-search-form">
+                      class="d-flex align-items-center justify-content-center gap-2 flex-wrap blog-search-form">
+                    
+                    {{-- Input search --}}
                     <div class="position-relative flex-grow-1" style="max-width:600px;">
                         <input 
                             type="text" 
@@ -111,19 +32,31 @@
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
-                    <select name="filter" class="form-select rounded-pill border-secondary-subtle shadow-sm" style="width: 160px;" onchange="this.form.submit()">
+
+                    {{-- Filter kategori --}}
+                    <select name="filter" 
+                            class="form-select rounded-pill border-secondary-subtle shadow-sm" 
+                            style="width: 160px;" 
+                            onchange="this.form.submit()">
                         <option value="">Filter</option>
                         <option value="seni" {{ request('filter') == 'seni' ? 'selected' : '' }}>Seni</option>
                         <option value="lelang" {{ request('filter') == 'lelang' ? 'selected' : '' }}>Lelang</option>
                         <option value="lifestyle" {{ request('filter') == 'lifestyle' ? 'selected' : '' }}>Lifestyle</option>
-                        
-                        {{-- <option value="publikasi" {{ request('filter') == 'publikasi' ? 'selected' : '' }}>Publikasi</option> --}}
-                        {{-- <option value="pendanaan" {{ request('filter') == 'pendanaan' ? 'selected' : '' }}>Pendanaan</option> --}}
-                        {{-- <option value="lomba" {{ request('filter') == 'lomba' ? 'selected' : '' }}>Lomba</option> --}}
-                        
+
+                        {{-- Tambahan semua kategori dari database
+                        @foreach($categories as $category)
+                            <option value="{{ $category->slug }}" 
+                                {{ request('filter') == $category->slug ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach --}}
                     </select>
-                    <select name="sort" class="form-select rounded-pill border-secondary-subtle shadow-sm" 
-                            style="width: 160px;" onchange="this.form.submit()">
+
+                    {{-- Sort --}}
+                    <select name="sort" 
+                            class="form-select rounded-pill border-secondary-subtle shadow-sm" 
+                            style="width: 160px;" 
+                            onchange="this.form.submit()">
                         <option value="">Sort By</option>
                         <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Terbaru</option>
                         <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Terlama</option>
@@ -135,7 +68,7 @@
                 </form>
             </div>
 
-            {{-- Bagian daftar blog --}}
+            {{-- Daftar Blog --}}
             <div class="col-md-12 scrolling-pagination mt-5">
                 @if(isset($blogs) && $blogs->count() > 0)
                     <div class="row g-4">
@@ -144,7 +77,8 @@
                             <a href="{{ route('web.blog.detail', $blog->slug) }}" class="text-decoration-none text-dark">
                                 <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
                                     <div class="blog-figure">
-                                        <img src="{{ asset('uploads/blogs/'.$blog->image) }}" alt="{{ $blog->title }}">
+                                        <img src="{{ asset('uploads/blogs/'.$blog->image) }}" 
+                                             alt="{{ $blog->title }}">
                                     </div>
                                     <div class="card-body text-center">
                                         <h6 class="fw-semibold mt-2 mb-1">{{ $blog->title }}</h6>
@@ -155,12 +89,16 @@
                         </div>
                         @endforeach
                     </div>
+
+                    {{-- Pagination --}}
                     <div class="mt-4">
                         {{ $blogs->links() }}
                     </div>
                 @else
                     <div class="text-center py-5">
-                        <h5 class="text-muted">Belum ada blog yang tersedia untuk kategori atau pencarian ini.</h5>
+                        <h5 class="text-muted">
+                            Belum ada blog yang tersedia untuk kategori atau pencarian ini.
+                        </h5>
                     </div>
                 @endif
             </div>
@@ -168,24 +106,27 @@
     </div>
 </section>
 @endsection
+
+{{-- JS --}}
 @section('js')
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="{{asset('theme/owlcarousel/owl.carousel.min.js')}}"></script>
-    <script type="text/javascript">
-    $(document).ready(function(){
- 
-        $('ul.pagination').hide();
-        $(function() {
-            $('.scrolling-pagination').jscroll({
-                autoTrigger: true,
-                padding: 0,
-                nextSelector: '.pagination li.active + li a',
-                contentSelector: 'div.scrolling-pagination',
-                callback: function() {
-                    $('ul.pagination').remove();
-                }
-            });
-        });
-    })
-    </script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jscroll/2.4.1/jquery.jscroll.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    // sembunyikan pagination default
+    $('ul.pagination').hide();
+
+    // aktifkan jscroll
+    $('.scrolling-pagination').jscroll({
+        autoTrigger: true,
+        padding: 0,
+        nextSelector: '.pagination li.active + li a',
+        contentSelector: 'div.scrolling-pagination',
+        callback: function() {
+            $('ul.pagination').remove();
+        }
+    });
+});
+</script>
 @endsection

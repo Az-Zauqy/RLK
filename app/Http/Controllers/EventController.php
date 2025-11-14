@@ -46,7 +46,7 @@ class EventController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'link' => 'nullable|url',
             'description' => 'nullable|string',
-            'status' => 'required',
+            'status' => 'required|in:active,coming_soon,inactive',
         ]);
 
         $data = $request->all();

@@ -2,45 +2,69 @@
 @section('title','Create posts')
 @section('collapseBlog','show')
 @section('addblog','active')
+
 @section('css')
-<style type="text/css">
-.preview-cover {
-    height:160px;
-    width: 100%;
-    overflow: hidden;
-    position: relative;
-    border: 1px solid  #5a5c69;
-}
-.preview-cover img{
-    height:100%;
-    width: 100%;
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+<style>
+.preview-container img {
+    width: 100px;
+    height: 100px;
     object-fit: cover;
-    object-position: center;
+    border-radius: 5px;
+    margin: 5px;
 }
 </style>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css">
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
+
 @section('content')
 <!-- Begin Page Content -->
 <div class="container-fluid">
-    <!-- Page Heading -->
-    <h1 class="h5 mb-4 text-gray-800">Add
-    <small>Blog</small>
-    {{-- <a href="" class="btn btn-primary btn-sm float-right"><i class="fa fa-plus-circle"></i> Create</a> --}}
-    </h1>
-    {{ Form::open(array('route' => 'admin.blogs.store','files'=>true)) }}
-        @include('admin.blogs.form') 
-    @include('admin.partials._errors')
+    <h1 class="h5 mb-4 text-gray-800">Tambah <small>Blog</small></h1>
+    {{ Form::open(['route' => 'admin.blogs.store', 'files' => true]) }}
+        @include('admin.blogs.form')
     {{ Form::close() }}
 </div>
-<!-- /.container-fluid -->
 @endsection
+
 @section('js')
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
-    <script type="text/javascript">
+
+<script>
+$('#page').summernote({
+    placeholder: 'Tulis konten blog...',
+    height: 250,
+    toolbar: [['style', ['bold', 'italic', 'underline']], ['para', ['ul', 'ol']]],
+});
+
+// Select2 Tags
+$('#selTag').select2({
+    tags: true,
+    tokenSeparators: [","],
+    ajax: {
+        url: "{{ route('admin.blogs.tagpost') }}",
+        type: "post",
+        dataType: 'json',
+        delay: 250,
+        data: params => ({ _token: '{{ csrf_token() }}', search: params.term }),
+        processResults: data => ({ results: data })
+    }
+});
+
+// Preview Multi Image
+$('#input-foto-blog').on('change', function(e) {
+    const files = e.target.files;
+    $('#preview-container').html('');
+    Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => $('#preview-container').append(`<img src="${e.target.result}" />`);
+        reader.readAsDataURL(file);
+    });
+});
+</script>
+
+{{-- <script type="text/javascript">
         $('#page').summernote({
             placeholder: 'Tulis content page...',
             toolbar: [
@@ -104,4 +128,5 @@
 
     });
     </script>
+--}} 
 @endsection

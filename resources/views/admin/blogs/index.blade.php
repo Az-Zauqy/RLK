@@ -39,11 +39,12 @@
                             <td>{{$no++}}</td>
                             <td>
                                 {{ucfirst($blog->title)}}<br>
-                                @if($blog->kategori_id != 0)
+                                @if($blog->kategori_name)
                                 <span class="badge bg-primary text-white rounded-0">
-                                    {{ucfirst($blog->kategori->name)}}
+                                    {{ ucfirst($blog->kategori_name) }}
                                 </span>
                                 @endif
+
                                 <span class="badge bg-danger text-white rounded-0">
                                     {{$blog->status}}
                                 </span>

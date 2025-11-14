@@ -28,7 +28,8 @@
                 <div class="form-group">
                     <label>Status *</label>
                     <select name="status" class="form-control" required>
-                        <option value="active" {{ $event->status == 'active' ? 'selected' : '' }}>Active (Tampilkan di Homepage)</option>
+                        <option value="active" {{ $event->status == 'active' ? 'selected' : '' }}>Active (Tampilkan "Detail")</option>
+                        <option value="coming_soon" {{ $event->status == 'coming_soon' ? 'selected' : '' }}>Segera Hadir (Tampilkan "Segera Hadir")</option>
                         <option value="inactive" {{ $event->status == 'inactive' ? 'selected' : '' }}>Inactive (Sembunyikan)</option>
                     </select>
                 </div>
