@@ -100,7 +100,18 @@
                         </div>
                     </div> @endforeach
                 @endif
-                
+
+                <div class="item">
+                    <a href="{{ route('lelang') }}" class="card-see-more-link">
+                        <div class="card-auction card-see-more">
+                            <div class="card-body">
+                                <span class="see-more-icon">&rarr;</span>
+                                <h5>Lihat Semua Lelang</h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
             </div> <div class="owl-theme">
                 <div class="owl-controls">
                     </div>
@@ -113,16 +124,13 @@
 <section class="section-padding blog-section">
     <div class="container">
         <div class="row align-items-center mb-4">
-            <div class="col-6">
-                <h2 class="section-title mb-0">Online Blog</h2>
+            <h2 class="section-title">Online Blog</h2>
             </div>
-            <div class="col-6 text-end">
-                <a href="{{ route('blogs') }}" class="blog-see-all-link">Semua postingan >></a>
-            </div>
-        </div>
-        <div class="row">
-            @foreach($blogs->take(2) as $blog)
-            <div class="col-lg-6 mb-4 d-flex"> 
+        
+        <div class="blog-slider owl-carousel owl-theme">
+
+            @foreach($blogs->take(3) as $blog) 
+            <div class="item d-flex">
                 <div class="card-blog">
                     <img src="{{asset('uploads/blogs/'.$blog->image)}}" alt="{{$blog->title}}">
                     <div class="card-body">
@@ -133,8 +141,20 @@
                 </div>
             </div>
             @endforeach
-        </div>
-    </div>
+            <div class="item d-flex">
+                
+                <a href="{{ route('blogs') }}" class="card-see-more-link">
+                    
+                    <div class="card-auction card-see-more">
+                        <div class="card-body">
+                            <span class="see-more-icon">→</span> 
+                            <h5>Lihat Semua Blog</h5>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+            </div> </div>
 </section>
 @endif
 
@@ -174,6 +194,24 @@
                 },
                 1000:{
                     items: 3 // 3 item di desktop
+                }
+            }
+        });
+        $('.blog-slider').owlCarousel({
+            loop: false,     // Jangan berputar jika item kurang dari yang ditampilkan
+            margin: 30,      // Jarak antar kartu (ini PENTING, samakan dgn gutter Bootstrap)
+            nav: false,      // Sembunyikan tombol Next/Prev
+            dots: true,      // Tampilkan navigasi titik (dots)
+            responsive:{
+                0:{
+                    items: 1,      // Di mobile, tampilkan 1 item
+                    margin: 15     // Jarak di mobile
+                },
+                768:{
+                    items: 2       // Di tablet, tampilkan 2 item
+                },
+                992:{
+                    items: 2       // Di desktop, tampilkan 2 item
                 }
             }
         });

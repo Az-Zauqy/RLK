@@ -26,9 +26,9 @@ class HomeController extends Controller
     public function index()
     {
 
-        $products = Products::active()->orderBy('id','desc')->take(8)->get();
+        $products = Products::active()->orderBy('id','desc')->take(5)->get();
         $sliders = Sliders::active()->get();
-        $blogs = Posts::Blog()->orderBy('id','desc')->where('status','PUBLISHED')->take(2)->get();
+        $blogs = Posts::Blog()->orderBy('id','desc')->where('status','PUBLISHED')->take(3)->get();
 
         // 2. TAMBAHKAN INI (Mengambil 1 event aktif terbaru)
         $featuredEvent = Event::whereIn('status', ['active', 'coming_soon'])

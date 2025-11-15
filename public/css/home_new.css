@@ -1,5 +1,5 @@
 /* =======================================
-==   FILE CSS LENGKAP - home_new.css   ==
+==   FILE CSS LENGKAP - home_new.css   ==
 ======================================= */
 
 .main-content {
@@ -185,7 +185,7 @@
     font-size: 1.1rem;
     margin-top: 0;
     white-space: nowrap;
-    overflow: hidden;
+     overflow: hidden;
     text-overflow: ellipsis; 
 }
 .card-auction .card-body p {
@@ -195,10 +195,10 @@
     flex-grow: 1; 
 }
 .card-auction .card-body .btn {
-    border-radius: 50px;
-    padding: 8px 30px;
+     border-radius: 50px;
+     padding: 8px 30px;
     font-weight: 600;
-    align-self: center; 
+     align-self: center; 
     margin-top: auto; 
 }
 
@@ -213,7 +213,96 @@
 .btn-disabled-custom {
     border: 1px solid #ced4da;
     color: #6c757d;
-    background-color: #f8f9fa;
+     background-color: #f8f9fa;
+}
+
+/* ==============================================
+==   DESAIN ULANG KARTU "LIHAT SEMUA" (INTERAKTIF) ==
+==============================================
+*/
+
+/* Wrapper link (kita tambahkan transisi di sini) */
+.card-see-more-link {
+    text-decoration: none;
+    height: 100%;
+    display: block;
+    /* Transisi untuk efek 'pop' yang mulus */
+    transition: all 0.3s ease-in-out; 
+}
+
+/* ==============================================================
+  ==   PERUBAHAN 1: DESAIN KARTU "SEE MORE" (DEFAULT PUTIH)   ==
+  ==============================================================
+*/
+.card-auction.card-see-more {
+    background-color: #ffffff;    /* (DIUBAH) Latar jadi putih */
+    border: 1px solid #dee2e6;  /* (DITAMBAH) Samakan border dgn card lain */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.08); /* (DITAMBAH) Samakan shadow dgn card lain */
+
+    /* Transisi untuk perubahan warna & bayangan */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+
+    /* Pastikan tinggi & display sama dengan .card-auction */
+     height: 100%;
+    overflow: hidden; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+}
+
+/* Mengatur .card-body (mempertahankan padding Anda) */
+.card-auction.card-see-more .card-body {
+    justify-content: center; 
+    align-items: center; 
+    flex-grow: 1; /* Biarkan melar */
+    border-radius: 10px;
+    padding: 140px ; 
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+/* Ikon panah (Tampilan Awal) */
+.card-auction.card-see-more .see-more-icon {
+    font-size: 2.5rem;
+    font-weight: 200;
+    color: #00b8a9; /* Warna toska Anda */
+    display: block;
+    line-height: 1;
+    transition: transform 0.3s ease;
+}
+
+/* Teks judul (Tampilan Awal) */
+.card-auction.card-see-more h5 {
+    color: #212529;
+    margin-top: 15px;
+    white-space: normal;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+
+/* --- EFEK HOVER INTERAKTIF --- */
+
+/* 1. Saat link di-hover, kartu 'timbul' */
+.card-see-more-link:hover .card-auction.card-see-more {
+    background-color: #ffffff; /* Latar tetap putih */
+
+    /* (DIUBAH) Beri shadow yang lebih kuat agar "menonjol" */
+    box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.12);
+
+    /* Efek 'pop' kecil */
+    transform: scale(1.02); 
+}
+
+/* 2. Saat link di-hover, gerakkan ikon panah */
+.card-see-more-link:hover .see-more-icon {
+    transform: translateX(15px); /* Gerakkan panah ke kanan */
+}
+
+/* 3. Saat link di-hover, ganti warna teks */
+.card-see-more-link:hover h5 {
+    color: #00b8a9; /* Ganti warna teks jadi toska */
 }
 
 
@@ -240,8 +329,10 @@
     color: #0d6efd; 
 }
 .card-blog {
+    padding: 45px;
     background-color: white;
     border: 1px solid #dee2e6;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.08); 
     border-radius: 10px;
     overflow: hidden; 
     width: 100%;
@@ -280,8 +371,10 @@
     margin-top: auto; 
 }
 
+
+
 /* ==============================================
-==   PERBAIKAN STYLE DOTS OWL CAROUSEL (BARU) ==
+==   PERBAIKAN STYLE DOTS OWL CAROUSEL (BARU) ==
 ==============================================
 */
 .owl-theme .owl-dots {
@@ -299,25 +392,47 @@
     margin: 5px 5px; 
 }
 .owl-theme .owl-dots .owl-dot.active span {
-    background: #00b8a9; 
+     background: #00b8a9; 
+}
+
+/* ==============================================
+==   FIX EQUAL HEIGHT UNTUK BLOG CAROUSEL (REVISI)   ==
+==============================================
+*/
+
+/* 1. Ini adalah 'stage' (pembungkus semua item) */
+.blog-slider .owl-stage {
+    display: flex;
+    padding-bottom: 15px; 
+}
+
+/* 2. Ini adalah 'item' carousel (.owl-item) */
+.blog-slider .owl-item {
+    height: auto; 
+}
+
+/* 3. Ini adalah div .item.d-flex di dalam .owl-item.*/
+.blog-slider .item.d-flex {
+    width: 100%;
+    height: 100%; 
 }
 
 
 /* ============================================
-==    RESPONSIVE DESIGN KHUSUS MOBILE    ==
+==    RESPONSIVE DESIGN KHUSUS MOBILE    ==
 ============================================
 */
 @media (max-width: 767px) {
 
-    /* --- FONT & UKURAN UMUM --- */
+     /* --- FONT & UKURAN UMUM --- */
     .hero-section h1 { 
         font-size: 2.2rem; 
         margin-top: 10px; 
         margin-bottom: 10px; 
-    }
+     }
 
     .hero-section p { 
-        font-size: 0.95rem; 
+    font-size: 0.95rem; 
     }
 
     .hero-search { 
@@ -347,7 +462,7 @@
         padding: 6px 20px; 
         font-size: 0.9rem; 
     }
-    
+
     /* --- JUDUL SEKSI MOBILE --- */
     .section-title { 
         font-size: 1.7rem; 
@@ -391,21 +506,22 @@
     .card-auction .card-body { 
         padding: 15px; 
     } 
-    
+     
     .card-auction .card-body h5 { 
-        font-size: 1rem; 
+    font-size: 1rem; 
     }
 
     .card-auction .card-body p { 
-        font-size: 0.85rem; 
+    font-size: 0.85rem; 
     }
 
     .card-auction .card-body .btn { 
         padding: 7px 25px; font-size: 0.9rem; 
     }
-    
+
     .card-blog { 
         margin-bottom: 15px; 
+        padding: 15px; /* (BARU) Sesuaikan padding di mobile */
     }
 
     .card-blog img { 
@@ -427,5 +543,61 @@
     .card-blog .btn { 
         padding: 7px 25px; 
         font-size: 0.9rem; 
+    }
+
+    .card-auction.card-see-more {
+        min-height: 320px; 
+         margin-bottom: 15px; 
+        height: 100%;
+        padding: 15px; /* (BARU) Samakan padding di mobile */
+    }
+
+    .card-auction.card-see-more .card-body {
+        padding: 140px ;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        flex-grow: 1; 
+    }
+
+    .card-auction.card-see-more .see-more-icon {
+        font-size: 2.2rem; 
+    }
+
+    .card-auction.card-see-more h5 {
+        font-size: 1.1rem; 
+        margin-top: 10px;
+    }
+}
+
+
+/* ==============================================================
+  ==   PERUBAHAN 2: FIX "DOUBLE TAP" PADA MOBILE (TOUCH)   ==
+  ==============================================================
+*/
+/* Media query ini menargetkan perangkat (seperti HP/Tablet) 
+  yang tidak memiliki kemampuan 'hover' secara native.
+*/
+@media (hover: none) {
+    
+    /* Kita menonaktifkan semua efek transisi & visual 
+      saat link di-'hover' (atau 'tap' pertama).
+      Ini akan membuat 'click' langsung tereksekusi (1x tap).
+    */
+    .card-see-more-link:hover .card-auction.card-see-more {
+        /* Kembalikan ke style default (yang sudah kita ubah jadi putih) */
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.08); 
+        transform: none; /* Hapus animasi 'pop' */
+    }
+
+    .card-see-more-link:hover .see-more-icon {
+        transform: none; /* Hapus animasi gerak ikon */
+    }
+
+    .card-see-more-link:hover h5 {
+        color: #212529; /* Kembalikan ke warna teks default */
     }
 }
