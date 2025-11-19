@@ -13,7 +13,7 @@ class CreateMerchProductTable extends Migration
      */
     public function up()
     {
-        Schema::create('merch_product', function (Blueprint $table) {
+        Schema::create('merch_products', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('user_id')->index();
             $table->integer('kategori_id')->index();
@@ -21,15 +21,7 @@ class CreateMerchProductTable extends Migration
             $table->string('title');
             $table->string('slug');
             $table->text('description');
-            $table->integer('price');
-            $table->integer('diskon')->default(0);
-            $table->integer('stock')->default(1);
-            $table->string('sku')->nullable();
-            $table->integer('weight');
             $table->integer('asuransi')->default(0);
-            $table->integer('long')->default(10);
-            $table->integer('width')->default(10);
-            $table->integer('height')->default(10);
             $table->integer('status')->default(1); //1 aktif, 0, non aktif
             $table->string('views')->default(0);
             $table->string('kondisi')->nullable(); //1 baru, 0, bekas
@@ -44,6 +36,6 @@ class CreateMerchProductTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('merch_product');
+        Schema::dropIfExists('merch_products');
     }
 }
