@@ -5,28 +5,19 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
-class MerchProducts extends Model
+class MerchProduct extends Model
 {
-    // table khusus untuk merch product
-    protected $table = "merch_product";
+    // table khusus untuk merch product (sesuai migration `merch_products`)
+    protected $table = "merch_products";
 
     protected $fillable = [
-        'id',
         'user_id',
         'kategori_id',
         'karya_id',
         'title',
         'slug',
         'description',
-        'price',
-        'diskon',
-        'stock',
-        'sku',
-        'weight',
         'asuransi',
-        'long',
-        'height',
-        'width',
         'status',
         'views',
         'kondisi',
@@ -36,32 +27,8 @@ class MerchProducts extends Model
      * Casts
      */
     protected $casts = [
-        'end_date' => 'datetime',
-        'size' => 'array',
+        // no special casts required for this migration's columns
     ];
-
-    // --- Relasi ---
-    public function images()
-    {
-        return $this->hasMany('App\MerchProductImage', 'merch_product_id');
-    }
-
-    public function imageUtama()
-    {
-        return $this->hasOne('App\MerchProductImage', 'merch_product_id')->where('name', '=', 'img_utama');
-    }
-    public function imageDepan()
-    {
-        return $this->hasOne('App\MerchProductImage', 'merch_product_id')->where('name', '=', 'img_depan');
-    }
-    public function imageSamping()
-    {
-        return $this->hasOne('App\MerchProductImage', 'merch_product_id')->where('name', '=', 'img_samping');
-    }
-    public function imageAtas()
-    {
-        return $this->hasOne('App\MerchProductImage', 'merch_product_id')->where('name', '=', 'img_atas');
-    }
 
     public function kategori()
     {
@@ -78,9 +45,12 @@ class MerchProducts extends Model
         return $this->belongsToMany('App\Size', 'merch_product_size', 'merch_product_id', 'size_id')->withTimestamps();
     }
 
-    public function bid()
+    /**
+     * Many-to-Many relation to categories
+     */
+    public function categories()
     {
-        return $this->hasMany(Bid::class);
+        return $this->belongsToMany('App\MerchCategory', 'merch_category_product', 'merch_product_id', 'merch_category_id')->withTimestamps();
     }
 
     public function scopeActive($query)

@@ -6,22 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class MerchProductImage extends Model
 {
-    protected $table = 'merch_product_image';
+    // this model now represents variant images
+    protected $table = 'merch_product_variant_images';
 
     protected $fillable = [
-        'merch_product_id',
-        'name',
-        'path',
+        'merch_product_variant_id',
+        'image_path',
+        'label',
+        'sort_order',
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
-        'deleted_at'
     ];
 
-    public function merchProduct()
+    public function merchProductVariant()
     {
-        return $this->belongsTo('App\MerchProducts','merch_product_id');
+        return $this->belongsTo('App\MerchProductVariant', 'merch_product_variant_id');
     }
 }
